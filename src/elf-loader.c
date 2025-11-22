@@ -81,7 +81,6 @@ void load_and_run(const char *filename, int argc, char **argv, char **envp)
 	void *elf_contents = map_elf(filename);
 
 	/**
-	 * TODO: ELF Header Validation
 	 * Validate ELF magic bytes - "Not a valid ELF file" + exit code 3 if invalid.
 	 * Validate ELF class is 64-bit (ELFCLASS64) - "Not a 64-bit ELF" + exit code 4 if invalid.
 	 */
@@ -96,7 +95,7 @@ void load_and_run(const char *filename, int argc, char **argv, char **envp)
 	}
 
 	/**
-	 * TODO: Load PT_LOAD segments
+	 * Load PT_LOAD segments
 	 * For minimal syscall-only binaries.
 	 * For each PT_LOAD segment:
 	 * - Map the segments in memory. Permissions can be RWX for now.
@@ -124,7 +123,7 @@ void load_and_run(const char *filename, int argc, char **argv, char **envp)
 		memcpy(mapped_memory + aligned_offset, src, elf_phdr[i].p_filesz);
 
 		/**
-		 * TODO: Load Memory Regions with Correct Permissions
+		 * Load Memory Regions with Correct Permissions
 		 * For each PT_LOAD segment:
 		 *	- Set memory permissions according to program header p_flags (PF_R, PF_W, PF_X).
 		 *	- Use mprotect() or map with the correct permissions directly using mmap().
@@ -143,7 +142,7 @@ void load_and_run(const char *filename, int argc, char **argv, char **envp)
 	}
 
 	/**
-	 * TODO: Support Static Non-PIE Binaries with libc
+	 * Support Static Non-PIE Binaries with libc
 	 * Must set up a valid process stack, including:
 	 *	- argc, argv, envp
 	 *	- auxv vector (with entries like AT_PHDR, AT_PHENT, AT_PHNUM, etc.)
@@ -342,14 +341,8 @@ void load_and_run(const char *filename, int argc, char **argv, char **envp)
 
 	free(argv_pointers);
 	free(envp_pointers);
-	/**
-	 * TODO: Support Static PIE Executables
-	 * Map PT_LOAD segments at a random load base.
-	 * Adjust virtual addresses of segments and entry point by load_base.
-	 * Stack setup (argc, argv, envp, auxv) same as above.
-	 */
 
-	// TODO: Set the entry point and the stack pointer
+	// Set the entry point and the stack pointer
 	void (*entry)() = (void (*)())elf_ehdr->e_entry;
 
 	// Transfer control
